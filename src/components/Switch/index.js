@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import React, { useRef, useState } from 'react'
 import { View, Animated } from 'react-native'
 import { PanGestureHandler, State } from 'react-native-gesture-handler'
 
@@ -7,6 +7,7 @@ import styles from './styles'
 const Switch = ({ onFinishDrag }) => {
   let offset = useRef(0).current
   const switchDotTranslateX = useRef(new Animated.Value(0)).current
+  const [isDragging, setIsDragging] = useState(false)
 
   const handleHorizontalDrag = Animated.event(
     // https://docs.swmansion.com/react-native-gesture-handler/docs/gesture-handlers/api/pan-gh
@@ -17,6 +18,11 @@ const Switch = ({ onFinishDrag }) => {
   )
 
   const handleHandlerStateChange = event => {
+    if (event.nativeEvent.state == State.ACTIVE) {
+      setIsDragging(true)
+      return
+    }
+
     if (event.nativeEvent.oldState === State.ACTIVE) {
       const { translationX } = event.nativeEvent
 
@@ -43,6 +49,12 @@ const Switch = ({ onFinishDrag }) => {
         duration: 500,
         useNativeDriver: true
       }).start(() => {
+        if (toValue !== 0) {
+          // Sets a start point for when the dot
+          // is dragged to the right
+          switchDotTranslateX.setOffset(toValue)
+        }
+
         // setStates needs to be inside
         // Animated.timings's callback bc
         // itneeds the animation
@@ -50,11 +62,7 @@ const Switch = ({ onFinishDrag }) => {
         // otherwise, the component will be re-rendered
         // and the animation will be cropped
 
-        if (toValue !== 0) {
-          // Sets a start point for when the dot
-          // is dragged to the right
-          switchDotTranslateX.setOffset(toValue)
-        }
+        setIsDragging(false)
       })
     }
   }
@@ -78,7 +86,12 @@ const Switch = ({ onFinishDrag }) => {
                   })
                 }
               ]
-            }
+            },
+            isDragging
+              ? {
+                  elevation: 8
+                }
+              : null
           ]}
         />
       </PanGestureHandler>

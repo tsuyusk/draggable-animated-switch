@@ -8,7 +8,8 @@ const style = StyleSheet.create({
     backgroundColor: '#fff',
     paddingHorizontal: 4,
     paddingVertical: 2,
-    zIndex: 2
+    zIndex: 2,
+    elevation: 4
   },
 
   switchDot: {
