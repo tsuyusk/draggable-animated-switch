@@ -1,7 +1,7 @@
 import React from 'react'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 
-import Main from './Main'
+import Main from './components/Main'
 
 const App = () => {
   return (

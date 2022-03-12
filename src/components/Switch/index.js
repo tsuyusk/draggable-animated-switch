@@ -1,13 +1,12 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useRef } from 'react'
 import { View, Animated } from 'react-native'
 import { PanGestureHandler, State } from 'react-native-gesture-handler'
 
 import styles from './styles'
 
-const Main = () => {
+const Switch = ({ onFinishDrag }) => {
   let offset = useRef(0).current
   const switchDotTranslateX = useRef(new Animated.Value(0)).current
-  const raisingCircleScale = useRef(new Animated.Value(1)).current
 
   const handleHorizontalDrag = Animated.event(
     // https://docs.swmansion.com/react-native-gesture-handler/docs/gesture-handlers/api/pan-gh
@@ -37,11 +36,7 @@ const Main = () => {
         switchDotTranslateX.flattenOffset()
       }
 
-      Animated.timing(raisingCircleScale, {
-        toValue: toValue === 0 ? 1 : 1000,
-        duration: 500,
-        useNativeDriver: true
-      }).start()
+      onFinishDrag(toValue === 0 ? 'left' : 'right')
 
       Animated.timing(switchDotTranslateX, {
         toValue,
@@ -65,45 +60,30 @@ const Main = () => {
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.switch}>
-        <PanGestureHandler
-          onGestureEvent={handleHorizontalDrag}
-          onHandlerStateChange={handleHandlerStateChange}
-        >
-          <Animated.View
-            style={[
-              styles.switchDot,
-              {
-                transform: [
-                  {
-                    translateX: switchDotTranslateX.interpolate({
-                      inputRange: [0, 64],
-                      outputRange: [0, 64],
-                      extrapolate: 'clamp'
-                    })
-                  }
-                ]
-              }
-            ]}
-          />
-        </PanGestureHandler>
-      </View>
-
-      <Animated.View
-        style={[
-          styles.raisingCircle,
-          {
-            transform: [
-              {
-                scale: raisingCircleScale
-              }
-            ]
-          }
-        ]}
-      />
+    <View style={styles.switch}>
+      <PanGestureHandler
+        onGestureEvent={handleHorizontalDrag}
+        onHandlerStateChange={handleHandlerStateChange}
+      >
+        <Animated.View
+          style={[
+            styles.switchDot,
+            {
+              transform: [
+                {
+                  translateX: switchDotTranslateX.interpolate({
+                    inputRange: [0, 64],
+                    outputRange: [0, 64],
+                    extrapolate: 'clamp'
+                  })
+                }
+              ]
+            }
+          ]}
+        />
+      </PanGestureHandler>
     </View>
   )
 }
 
-export default Main
+export default Switch
